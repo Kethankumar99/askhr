@@ -1,55 +1,37 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import os
 
-# ⚠️ Your Gmail credentials (replace with yours)
-SMTP_EMAIL = "chevurukethankumar99@gmail.com"  # ← Change this
-SMTP_PASSWORD = "kczn eljr uwno uwvy"  # ← 16-digit App Password
+SMTP_SERVER = "smtp-relay.brevo.com"
+SMTP_PORT = 587
+SMTP_EMAIL = os.getenv("SMTP_EMAIL", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 
 def send_otp_email(to_email: str, otp: str, company_name: str = "AskHR") -> bool:
-    """Send OTP via email"""
-    
     try:
-        # Email content
-        subject = f"🔐 {company_name} - Email Verification OTP"
-        
-        html_content = f"""
-        <html>
-        <body style="font-family: Arial, sans-serif; padding: 20px;">
-            <div style="max-width: 500px; margin: auto; background: #f9f9f9; padding: 30px; border-radius: 10px;">
-                <h2 style="color: #2563EB;">🤖 {company_name}</h2>
-                <h3>Email Verification</h3>
-                <p>Your OTP for registration is:</p>
-                <div style="background: #2563EB; color: white; font-size: 32px; text-align: center; padding: 15px; border-radius: 8px; letter-spacing: 10px; font-weight: bold;">
-                    {otp}
-                </div>
-                <p style="color: #666; margin-top: 20px;">This OTP is valid for 5 minutes.</p>
-                <p style="color: #999; font-size: 12px;">If you didn't request this, please ignore.</p>
-                <hr>
-                <p style="color: #999; font-size: 12px; text-align: center;">Powered by AskHR</p>
-            </div>
-        </body>
-        </html>
-        """
-        
-        # Create message
-        msg = MIMEMultipart('alternative')
+        msg = MIMEMultipart()
         msg['From'] = f"AskHR <{SMTP_EMAIL}>"
         msg['To'] = to_email
-        msg['Subject'] = subject
+        msg['Subject'] = f"🔐 {company_name} - Verification Code"
         
-        # Attach HTML
-        msg.attach(MIMEText(html_content, 'html'))
+        html = f"""
+        <div style="font-family:Arial;max-width:400px;margin:auto;padding:20px;">
+            <h2 style="color:#4f46e5;">🤖 {company_name}</h2>
+            <h3>Your verification code:</h3>
+            <div style="font-size:36px;font-weight:bold;color:#4f46e5;letter-spacing:10px;text-align:center;padding:15px;">{otp}</div>
+            <p style="color:#666;">Valid for 5 minutes.</p>
+        </div>
+        """
+        msg.attach(MIMEText(html, 'html'))
         
-        # Send email
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(SMTP_EMAIL, SMTP_PASSWORD)
-            server.send_message(msg)
+            server.sendmail(SMTP_EMAIL, to_email, msg.as_string())
         
-        print(f"📧 OTP email sent to {to_email}")
+        print(f"📧 OTP sent to {to_email}")
         return True
-        
     except Exception as e:
-        print(f"❌ Email error: {str(e)}")
+        print(f"❌ Email error: {e}")
         return False

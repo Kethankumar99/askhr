@@ -33,11 +33,12 @@ app.include_router(chatbot.router)
 async def root():
     return {"app": "AskHR", "status": "Running", "docs": "/docs"}
 
-@app.on_event("startup")
-async def startup():
-    from app.database import engine, Base
-    import os
-    # Drop old tables and recreate
-    Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
-    pass
+# @app.on_event("startup")
+# async def startup():
+#     from app.database import engine, Base
+#     import os
+#     # Drop old tables and recreate
+#     Base.metadata.drop_all(bind=engine)
+#     Base.metadata.create_all(bind=engine)
+#     pass
+
