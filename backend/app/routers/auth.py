@@ -11,7 +11,13 @@ async def register(user_data: UserCreate, db: Session = Depends(get_db)):
     result = register_user(db, user_data)
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["message"])
-    return MessageResponse(message=f"OTP sent to {user_data.email}", success=True)
+    
+    # Demo: Return OTP in response
+    return {
+        "message": f"OTP sent to {user_data.email}",
+        "success": True,
+        "otp": result.get("otp", "")  # ← OTP in response
+    }
 
 @router.post("/verify-otp", response_model=TokenResponse)
 async def verify_otp(otp_data: OTPVerify, db: Session = Depends(get_db)):

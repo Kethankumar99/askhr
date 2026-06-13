@@ -42,3 +42,11 @@ async def root():
 #     Base.metadata.create_all(bind=engine)
 #     pass
 
+@app.on_event("startup")
+async def startup():
+    import os
+    if os.getenv("RESET_DB") == "true":
+        from app.database import engine, Base
+        Base.metadata.drop_all(bind=engine)
+        Base.metadata.create_all(bind=engine)
+        print("✅ Database reset complete!")
