@@ -8,11 +8,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/hr/login" />} />
+        <Route path="/chat/:company" element={<EmployeeChat />} />
         <Route path="/hr/login" element={<HRLogin />} />
         <Route path="/hr/register" element={<HRRegister />} />
         <Route path="/hr/dashboard" element={<HRDashboard />} />
-        <Route path="/chat/:company" element={<EmployeeChat />} />
+        <Route path="/" element={<Navigate to="/hr/login" />} />
+        <Route path="*" element={<Navigate to="/hr/login" />} />
       </Routes>
     </Router>
   );
