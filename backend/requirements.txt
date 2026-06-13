@@ -15,3 +15,6 @@ python-docx
 pandas
 openpyxl
 sentence-transformers
+tokenizers
+transformers
+torch
