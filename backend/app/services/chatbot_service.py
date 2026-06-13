@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.employee import Employee
 from app.models.user import User
 from app.services.document_service import get_or_create_collection
+import os
 
 # ── GROQ SETUP ──
 
