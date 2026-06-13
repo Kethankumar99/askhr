@@ -142,7 +142,7 @@ export default function HRDashboard() {
   const totalPages = Math.ceil(employees.length / perPage);
   const paginatedEmployees = employees.slice((page - 1) * perPage, page * perPage);
   const chatSlug = companyName.toLowerCase().replace(/\s+/g, '-');
-  const copyLink = () => { navigator.clipboard.writeText(`${FRONTEND_URL}/chat/${chatSlug}`); alert('✅ Link copied!'); };
+  const copyLink = () => { navigator.clipboard.writeText(`${FRONTEND_URL}/#chat/${chatSlug}`); alert('✅ Link copied!'); };
 
   return (
     <div className="min-h-screen p-4 md:p-6 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20">
@@ -156,7 +156,7 @@ export default function HRDashboard() {
             <div><h1 className="text-lg font-bold text-slate-800">{data?.company_name}</h1><p className="text-xs text-slate-500">🤖 {data?.bot_name} | Dashboard</p></div>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => window.open(`${FRONTEND_URL}/chat/${chatSlug}`, '_blank')} className="px-4 py-2 bg-white border border-slate-200 text-indigo-600 rounded-xl text-sm font-semibold hover:bg-indigo-50 transition flex items-center gap-1.5"><ExternalLink size={14} /> Preview Chat</button>
+            <button onClick={() => window.open(`${FRONTEND_URL}/#/chat/${chatSlug}`, '_blank')} className="px-4 py-2 bg-white border border-slate-200 text-indigo-600 rounded-xl text-sm font-semibold hover:bg-indigo-50 transition flex items-center gap-1.5"><ExternalLink size={14} /> Preview Chat</button>
             <button onClick={handleLogout} className="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-100 transition flex items-center gap-1.5"><LogOut size={14} /> Logout</button>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function HRDashboard() {
         <div className="relative bg-white/80 backdrop-blur-xl rounded-2xl p-5 border border-white/50 shadow-sm">
           <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">🔗 Share with Employees</p>
           <div className="flex flex-col sm:flex-row gap-2">
-            <input type="text" value={`${FRONTEND_URL}/chat/${chatSlug}`} readOnly className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50/50 text-sm text-slate-600 outline-none" />
+            <input type="text" value={`${FRONTEND_URL}/#/chat/${chatSlug}`} readOnly className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50/50 text-sm text-slate-600 outline-none" />
             <button onClick={copyLink} className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-sm flex items-center gap-1.5"><Copy size={16} /> Copy</button>
           </div>
         </div>
