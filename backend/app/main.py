@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base, reset_db
+from app.database import engine, Base
 from app.models import User, Employee, Document
 from app.routers import auth, dashboard, employees, documents, chatbot
+import os
+import time
 
+# Create tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -32,6 +35,9 @@ async def root():
 
 @app.on_event("startup")
 async def startup():
-    # Uncomment to reset DB on deploy (only once!)
-    reset_db()
+    from app.database import engine, Base
+    import os
+    # Drop old tables and recreate
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
     pass
