@@ -5,7 +5,8 @@ from app.models.user import User
 from app.services.document_service import get_or_create_collection
 
 # ── GROQ SETUP ──
-GROQ_API_KEY = "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"  # ← Nee Groq API key pettu
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 groq_client = Groq(api_key=GROQ_API_KEY)
 
 def verify_employee(db: Session, email: str, company_email: str) -> bool:
