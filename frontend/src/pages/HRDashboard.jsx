@@ -59,52 +59,125 @@ export default function HRDashboard() {
     setTimeout(() => setAddMsg(null), 4000);
   };
 
-  const bulkUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // const bulkUpload = async (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
     
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-      setUploadProgress({
-        show: true, fileName: file.name,
-        fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
-        status: 'error',
-        message: `❌ File too large! Max 10MB. Your file: ${(file.size / (1024 * 1024)).toFixed(1)} MB`
-      });
-      e.target.value = '';
-      setTimeout(() => setUploadProgress({ show: false, fileName: '', fileSize: '', status: '' }), 5000);
-      return;
-    }
+  //   const maxSize = 10 * 1024 * 1024;
+  //   if (file.size > maxSize) {
+  //     setUploadProgress({
+  //       show: true, fileName: file.name,
+  //       fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
+  //       status: 'error',
+  //       message: `❌ File too large! Max 10MB. Your file: ${(file.size / (1024 * 1024)).toFixed(1)} MB`
+  //     });
+  //     e.target.value = '';
+  //     setTimeout(() => setUploadProgress({ show: false, fileName: '', fileSize: '', status: '' }), 5000);
+  //     return;
+  //   }
 
-    setUploadProgress({ show: true, fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB', status: 'uploading', message: '⏳ Extracting emails...' });
-    setUploading(true);
+  //   setUploadProgress({ show: true, fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB', status: 'uploading', message: '⏳ Extracting emails...' });
+  //   setUploading(true);
 
-    const formData = new FormData();
-    formData.append('file', file);
+  //   const formData = new FormData();
+  //   formData.append('file', file);
     
-    try {
-      const res = await fetch(`${API_URL}/api/employees/upload-file`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-        body: formData
-      });
-      const result = await res.json();
+  //   try {
+  //     const res = await fetch(`${API_URL}/api/employees/upload-file`, {
+  //       method: 'POST',
+  //       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+  //       body: formData
+  //     });
+  //     const result = await res.json();
       
-      if (res.ok) {
-        setUploadProgress({ show: true, fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB', status: 'success', message: `✅ Done! ${result.emails_found?.length || 0} emails found` });
-        setResultModal({ open: true, title: '📁 Bulk Upload Complete', data: { found: result.emails_found?.length || 0, added: result.added?.length || 0, skipped: result.skipped?.length || 0, addedList: result.added || [], skippedList: result.skipped || [] } });
-        setLoaded(false);
-      } else {
-        setUploadProgress({ show: true, fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB', status: 'error', message: `❌ ${result.detail || 'Upload failed'}` });
-      }
-    } catch {
-      setUploadProgress({ show: true, fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB', status: 'error', message: '❌ Connection error' });
-    }
+  //     if (res.ok) {
+  //       setUploadProgress({ show: true, fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB', status: 'success', message: `✅ Done! ${result.emails_found?.length || 0} emails found` });
+  //       setResultModal({ open: true, title: '📁 Bulk Upload Complete', data: { found: result.emails_found?.length || 0, added: result.added?.length || 0, skipped: result.skipped?.length || 0, addedList: result.added || [], skippedList: result.skipped || [] } });
+  //       setLoaded(false);
+  //     } else {
+  //       setUploadProgress({ show: true, fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB', status: 'error', message: `❌ ${result.detail || 'Upload failed'}` });
+  //     }
+  //   } catch {
+  //     setUploadProgress({ show: true, fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB', status: 'error', message: '❌ Connection error' });
+  //   }
+  //   setUploading(false);
+  //   e.target.value = '';
+  //   setTimeout(() => setUploadProgress({ show: false, fileName: '', fileSize: '', status: '' }), 5000);
+  // };
+const bulkUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const maxSize = 10 * 1024 * 1024;
+  if (file.size > maxSize) {
+    setUploadProgress({
+      show: true, fileName: file.name,
+      fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
+      status: 'error',
+      message: `❌ File too large! Max 10MB.`
+    });
+    e.target.value = '';
+    setTimeout(() => setUploadProgress({ show: false, fileName: '', fileSize: '', status: '' }), 4000);
+    return;
+  }
+
+  setUploadProgress({ show: true, fileName: file.name, fileSize: (file.size / 1024).toFixed(1) + ' KB', status: 'uploading', message: '⏳ Extracting emails...' });
+  setUploading(true);
+
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  try {
+    const res = await fetch(`${API_URL}/api/employees/upload-file`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+      body: formData
+    });
+    const result = await res.json();
+    
     setUploading(false);
     e.target.value = '';
-    setTimeout(() => setUploadProgress({ show: false, fileName: '', fileSize: '', status: '' }), 5000);
-  };
-
+    
+    if (res.ok) {
+      setUploadProgress({ show: false, fileName: '', fileSize: '', status: '' });
+      setResultModal({
+        open: true,
+        title: result.added?.length > 0 ? '✅ Upload Complete' : '⚠️ No New Employees',
+        data: {
+          success: true,
+          found: result.emails_found?.length || 0,
+          added: result.added?.length || 0,
+          skipped: result.skipped?.length || 0,
+          addedList: result.added || [],
+          skippedList: result.skipped || []
+        }
+      });
+      if (result.added?.length > 0) setLoaded(false);
+    } else {
+      setUploadProgress({ show: false, fileName: '', fileSize: '', status: '' });
+      setResultModal({
+        open: true,
+        title: '❌ Upload Failed',
+        data: {
+          success: false,
+          error: result.detail || 'Something went wrong. Try again.'
+        }
+      });
+    }
+  } catch {
+    setUploading(false);
+    e.target.value = '';
+    setUploadProgress({ show: false, fileName: '', fileSize: '', status: '' });
+    setResultModal({
+      open: true,
+      title: '❌ Connection Error',
+      data: {
+        success: false,
+        error: 'Unable to connect. Check your internet.'
+      }
+    });
+  }
+};
   const deleteEmployee = (email) => setModal({ open: true, title: 'Remove Employee', message: `Remove "${email}"?`, onConfirm: async () => { try { await api.delete('/api/employees/delete', { data: { email } }); setLoaded(false); } catch { /* empty */ } } });
   
   const uploadDoc = async (e) => {
