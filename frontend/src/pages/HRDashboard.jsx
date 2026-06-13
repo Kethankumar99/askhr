@@ -6,7 +6,7 @@ import Modal from '../components/Modal';
 import ResultModal from '../components/ResultModal';
 
 const API_URL = 'https://askhr-1e3a.onrender.com';
-const FRONTEND_URL = 'https://askhr-9fz0yxrk4-kethan-s-projects.vercel.app';
+const FRONTEND_URL = 'https://askhr-iota.vercel.app';
 
 export default function HRDashboard() {
   const [data, setData] = useState(null);
