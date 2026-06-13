@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HRLogin from './pages/HRLogin';
 import HRRegister from './pages/HRRegister';
 import HRDashboard from './pages/HRDashboard';
