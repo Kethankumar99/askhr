@@ -9,9 +9,18 @@ from app.utils.otp import generate_otp, store_otp, verify_otp
 temp_users = {}
 
 def register_user(db: Session, user_data) -> dict:
+    # Check email
     existing = db.query(User).filter(User.email == user_data.email).first()
     if existing:
         return {"success": False, "message": "Email already registered"}
+    
+    # Check company name (case insensitive)
+    from sqlalchemy import func
+    existing_company = db.query(User).filter(
+        func.lower(User.company_name) == user_data.company_name.lower()
+    ).first()
+    if existing_company:
+        return {"success": False, "message": "Company name already taken"}
     
     otp = generate_otp()
     store_otp(user_data.email, otp)
@@ -21,6 +30,8 @@ def register_user(db: Session, user_data) -> dict:
         "company_name": user_data.company_name,
         "bot_name": user_data.bot_name
     }
+    
+    return {"success": True, "message": "OTP sent", "otp": otp}
     
     return {"success": True, "message": "OTP sent", "otp": otp}
 
