@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.database import engine, Base
+from app.database import engine, Base, reset_db
 from app.models import User, Employee, Document
 from app.routers import auth, dashboard, employees, documents, chatbot
 
@@ -29,3 +29,9 @@ app.include_router(chatbot.router)
 @app.get("/")
 async def root():
     return {"app": "AskHR", "status": "Running", "docs": "/docs"}
+
+@app.on_event("startup")
+async def startup():
+    # Uncomment to reset DB on deploy (only once!)
+    reset_db()
+    pass
