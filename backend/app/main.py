@@ -33,5 +33,5 @@ async def root():
 @app.on_event("startup")
 async def startup():
     # Uncomment to reset DB on deploy (only once!)
-    reset_db()
+    #reset_db()
     pass

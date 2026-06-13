@@ -35,7 +35,7 @@ async def login(login_data: UserLogin, db: Session = Depends(get_db)):
         bot_name=result["bot_name"]
     )
 
-    @router.post("/forgot-password")
+@router.post("/forgot-password")
 async def forgot_password(email_data: dict, db: Session = Depends(get_db)):
     """
     📧 Forgot Password - Send OTP to email
