@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import api from '../api/axios';
 
 export default function HRRegister() {
@@ -31,6 +32,25 @@ export default function HRRegister() {
     }
   };
 
+  const handleResend = async () => {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+    try {
+      await api.post('/api/auth/register', {
+        email: form.email,
+        password: form.password,
+        company_name: form.company,
+        bot_name: form.botName
+      });
+      setSuccess('Code resent!');
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to resend');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleOtpChange = (index, value) => {
     if (value.length > 1) return;
     const newOtp = [...otp];
@@ -55,7 +75,7 @@ export default function HRRegister() {
       const res = await api.post('/api/auth/verify-otp', { email: form.email, otp: otpCode });
       localStorage.setItem('token', res.data.access_token);
       localStorage.setItem('company', res.data.company_name);
-      setSuccess('Account created!');
+      setSuccess('Account created! Redirecting...');
       setTimeout(() => navigate('/hr/dashboard'), 1000);
     } catch (err) {
       setError(err.response?.data?.detail || 'Invalid code');
@@ -66,10 +86,10 @@ export default function HRRegister() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/20">
+      <div className="absolute top-20 right-20 w-72 h-72 bg-purple-200/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-20 left-20 w-72 h-72 bg-indigo-200/20 rounded-full blur-3xl pointer-events-none" />
+
       <div className="w-full max-w-md relative">
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-indigo-200/40 rounded-full blur-3xl pointer-events-none" />
-        
         <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-white/50">
           <div className="text-center mb-8">
             <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl inline-flex items-center justify-center text-2xl font-bold text-white shadow-lg shadow-indigo-200 mb-4">
@@ -86,16 +106,16 @@ export default function HRRegister() {
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step === 2 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-slate-100 text-slate-400'}`}>2</div>
           </div>
 
-          {error && <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm mb-4 text-center font-medium border border-red-100">{error}</div>}
-          {success && <div className="bg-green-50 text-green-600 px-4 py-3 rounded-xl text-sm mb-4 text-center font-medium border border-green-100">{success}</div>}
+          {error && <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm mb-4 text-center font-medium">{error}</div>}
+          {success && <div className="bg-green-50 border border-green-100 text-green-600 px-4 py-3 rounded-xl text-sm mb-4 text-center font-medium">{success}</div>}
 
           {step === 1 ? (
             <form onSubmit={handleRegister} className="space-y-3">
               {[
-                { label: 'Company Email', icon: '✉️', type: 'email', value: form.email, key: 'email', placeholder: 'hr@company.com' },
-                { label: 'Password', icon: '🔒', type: 'password', value: form.password, key: 'password', placeholder: 'Create password' },
-                { label: 'Company Name', icon: '🏢', type: 'text', value: form.company, key: 'company', placeholder: 'Company name' },
-                { label: 'Bot Name', icon: '🤖', type: 'text', value: form.botName, key: 'botName', placeholder: 'HR Assistant' },
+                { label: 'Company Email', icon: '✉️', type: 'email', key: 'email', placeholder: 'hr@company.com' },
+                { label: 'Password', icon: '🔒', type: 'password', key: 'password', placeholder: 'Create password' },
+                { label: 'Company Name', icon: '🏢', type: 'text', key: 'company', placeholder: 'Company name' },
+                { label: 'Bot Name', icon: '🤖', type: 'text', key: 'botName', placeholder: 'HR Assistant' },
               ].map((f) => (
                 <div key={f.key}>
                   <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1.5">{f.label}</label>
@@ -103,22 +123,29 @@ export default function HRRegister() {
                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm opacity-70">{f.icon}</span>
                     <input
                       type={f.type}
-                      value={f.value}
+                      value={form[f.key]}
                       onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
                       placeholder={f.placeholder}
-                      className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl bg-slate-50/50 text-slate-800 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all text-sm"
+                      className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl bg-slate-50/50 text-slate-800 outline-none focus:border-indigo-400 transition-all text-sm"
                       required
                     />
                   </div>
                 </div>
               ))}
-              <button type="submit" disabled={loading} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-semibold text-sm hover:shadow-lg hover:shadow-indigo-200 transition-all disabled:opacity-60 mt-2">
-                {loading ? 'Sending...' : 'Send Verification Code'}
+              <button type="submit" disabled={loading} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-semibold text-sm hover:shadow-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2 mt-2">
+                {loading ? <><Loader2 size={16} className="animate-spin" /> Sending...</> : 'Send Verification Code'}
               </button>
             </form>
           ) : (
             <form onSubmit={handleVerify} className="space-y-4">
-              <p className="text-center text-sm text-slate-600">Code sent to <strong className="text-indigo-600">{form.email}</strong></p>
+              <div className="text-center">
+                <p className="text-sm text-slate-500">Code sent to</p>
+                <div className="flex items-center justify-center gap-2 mt-1">
+                  <strong className="text-indigo-600">{form.email}</strong>
+                  <button type="button" onClick={() => { setStep(1); setError(''); setSuccess(''); }} className="text-xs text-slate-400 hover:text-indigo-600 underline">Change</button>
+                </div>
+              </div>
+
               <div className="flex gap-2.5 justify-center">
                 {otp.map((digit, i) => (
                   <input
@@ -129,12 +156,20 @@ export default function HRRegister() {
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="w-12 h-14 text-center text-xl font-bold border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50 transition-all text-slate-800"
+                    className="w-12 h-14 text-center text-xl font-bold border border-slate-200 rounded-xl bg-slate-50/50 outline-none focus:border-indigo-400 transition-all text-slate-800"
                   />
                 ))}
               </div>
-              <button type="submit" disabled={loading} className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-semibold text-sm hover:shadow-lg transition-all disabled:opacity-60">
-                {loading ? 'Creating...' : 'Verify & Create Account'}
+
+              <p className="text-center text-xs text-slate-400">
+                Didn't receive code?{' '}
+                <button type="button" onClick={handleResend} disabled={loading} className="text-indigo-600 font-semibold hover:underline disabled:opacity-50">
+                  Resend
+                </button>
+              </p>
+
+              <button type="submit" disabled={loading} className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-semibold text-sm hover:shadow-lg transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+                {loading ? <><Loader2 size={16} className="animate-spin" /> Creating...</> : 'Verify & Create Account'}
               </button>
             </form>
           )}
